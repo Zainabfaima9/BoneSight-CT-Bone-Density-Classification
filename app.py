@@ -591,6 +591,77 @@ elif st.session_state.page == "Learn":
             "so one imaging modality does the work normally split across two."
         )
 
+    with st.expander("🏥 What is a DXA scan, and why is it done?"):
+        st.write(
+            "DXA (Dual-energy X-ray Absorptiometry) is the clinical "
+            "gold-standard test for measuring bone density. It sends two "
+            "X-ray beams of different energy levels through bone (usually "
+            "the hip and lower spine); the difference in how much each "
+            "beam is absorbed lets a scanner calculate Bone Mineral "
+            "Density (BMD) very precisely."
+        )
+        st.write(
+            "It's done to catch bone loss early, estimate fracture risk, "
+            "diagnose osteoporosis before a fracture happens, and monitor "
+            "how a patient responds to treatment. The scan itself is "
+            "quick (10–15 minutes), painless, and uses very low radiation "
+            "— much lower than a standard CT."
+        )
+        st.write(
+            "DXA results are usually reported as a **T-score**: a normal "
+            "T-score is -1.0 or above, -1.0 to -2.5 is Osteopenia, and "
+            "below -2.5 is Osteoporosis. BoneSight-CT doesn't produce a "
+            "T-score directly — it uses a different, CT-based measurement "
+            "(HU) that has been separately validated against DXA results "
+            "in large studies."
+        )
+        st.write(
+            "**The catch:** DXA machines are expensive and far less "
+            "common than CT scanners, especially outside major cities — "
+            "which is exactly the gap BoneSight-CT is trying to help close."
+        )
+
+    with st.expander("🦴 What is Osteoporosis?"):
+        st.write(
+            "Osteoporosis is a condition where bone tissue loses density "
+            "and strength faster than the body can rebuild it. Bones "
+            "become porous and fragile — like a sponge with larger holes "
+            "— which makes them much more likely to fracture, even from a "
+            "minor fall or bump. It's often called a 'silent disease' "
+            "because there are usually no symptoms until a fracture occurs."
+        )
+
+    with st.expander("🦴 What is Osteopenia?"):
+        st.write(
+            "Osteopenia is an earlier, milder stage of bone density loss "
+            "— lower than normal, but not low enough to be classified as "
+            "osteoporosis. It doesn't always progress to osteoporosis, but "
+            "it's a meaningful warning sign, and catching it early gives "
+            "the most room for lifestyle changes or treatment to help."
+        )
+
+    with st.expander("👥 Who gets osteoporosis, and why?"):
+        st.write(
+            "Osteoporosis becomes far more common with age, because bone "
+            "naturally remodels more slowly over time. It is especially "
+            "common in **postmenopausal women** — the drop in estrogen "
+            "after menopause significantly speeds up bone loss — and in "
+            "**men and women over roughly 65–70**."
+        )
+        st.write(
+            "Other risk factors include: family history of osteoporosis "
+            "or fractures, low calcium or vitamin D intake, a sedentary "
+            "lifestyle, smoking and heavy alcohol use, low body weight, "
+            "and long-term use of certain medications (such as steroids)."
+        )
+        st.write(
+            "This is part of why opportunistic screening matters: many of "
+            "the people most at risk (older patients) are also the ones "
+            "already getting chest CTs for other age-related conditions — "
+            "so the opportunity to screen is already there, in a scan "
+            "they're already having."
+        )
+
     with st.expander("🩻 Why chest CT?"):
         st.write(
             "Chest CTs are extremely common — lung cancer screening, "
@@ -635,6 +706,79 @@ elif st.session_state.page == "Learn":
             """
         )
 
+    with st.expander("🎓 What inspired this project?"):
+        st.write(
+            "BoneSight-CT was inspired by a Taipei Medical University "
+            "study (Kuo et al., *International Journal of Medical "
+            "Informatics*, 2025), which used a deep-learning (ViT-CNN) "
+            "model to recommend DXA follow-up scans directly from chest "
+            "low-dose CT images. Dr. Yi-Tien Li is a co-author on that "
+            "paper."
+        )
+        st.write(
+            "This project doesn't attempt to reproduce that model — it "
+            "uses a simpler, fully transparent HU-threshold method "
+            "(Pickhardt et al., 2019) instead of a custom deep-learning "
+            "model, since it was built solo, without a mentor or "
+            "institutional compute/data access, on a compressed timeline."
+        )
+        st.write(
+            "What it keeps **authentic** to that inspiration is the "
+            "underlying idea: a routine chest CT can carry a legitimate, "
+            "clinically-grounded bone-density signal, if the right region "
+            "is measured correctly. Building this end-to-end — from raw "
+            "DICOM data to a working classification pipeline — was about "
+            "proving that idea is achievable independently, using "
+            "published, peer-reviewed thresholds rather than an unverified "
+            "shortcut."
+        )
+
+    with st.expander("🧭 How would this work in a real hospital, in the future?"):
+        st.markdown(
+            """
+            This prototype classifies one HU value at a time. A realistic
+            future clinical workflow would look like this:
+
+            1. **Automatic trigger** — every chest CT sent to the hospital's
+               imaging system (PACS) is automatically checked for whether
+               L1 is inside the scanned range.
+            2. **Background processing** — if it is, the L1-HU pipeline runs
+               quietly in the background (no extra scan, no patient wait).
+            3. **Report addendum** — if the result falls in the Osteopenia
+               or Osteoporosis range, a flag is added to the radiologist's
+               report as a *suggestion*, not an automatic diagnosis.
+            4. **Radiologist review** — the radiologist decides, using their
+               judgment and the patient's history, whether to recommend a
+               formal DXA scan.
+            5. **Referral, especially where DXA is scarce** — in hospitals
+               without a DXA machine, this flag becomes even more valuable:
+               it can prompt a referral to a facility that has one, instead
+               of bone loss going undetected entirely.
+
+            The tool's role stays limited on purpose: it surfaces a signal
+            for a qualified clinician to act on — it never diagnoses or
+            replaces DXA itself.
+            """
+        )
+
+    with st.expander("🎯 Why build this at all — what's the point?"):
+        st.write(
+            "The purpose isn't to replace DXA or radiologists. It's to "
+            "close a real accessibility gap: chest CT scanners are far "
+            "more widely available than DXA machines, especially in "
+            "smaller cities and lower-resource hospitals. Every chest CT "
+            "that already includes L1 is a missed opportunity for a free "
+            "bone-density signal if nobody looks at it that way."
+        )
+        st.write(
+            "This project exists to show — honestly, with real data and "
+            "real limitations reported — that a validated, published "
+            "method (not a black-box model) can be built end-to-end by a "
+            "single student, on public data, without a hospital or mentor, "
+            "and still produce a genuinely useful, clinically-grounded "
+            "screening signal."
+        )
+
     with st.expander("⚠️ Honest limitations"):
         st.write(
             "- **No DXA ground truth**: this dataset has no matched DXA "
@@ -667,6 +811,14 @@ elif st.session_state.page == "Learn":
     st.markdown(
         "- Kuo, C.Y., et al. *Deep learning chest LDCT to DXA "
         "recommendation.* International Journal of Medical Informatics (2025)."
+    )
+    st.markdown(
+        "- World Health Organization. *WHO Criteria for the Diagnosis of "
+        "Osteoporosis* (T-score classification, based on DXA BMD measurement)."
+    )
+    st.markdown(
+        "- International Osteoporosis Foundation — patient-facing "
+        "reference on DXA scanning, osteoporosis, and osteopenia."
     )
 
     st.divider()
