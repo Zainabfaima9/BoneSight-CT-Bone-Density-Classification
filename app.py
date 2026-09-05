@@ -211,6 +211,13 @@ except FileNotFoundError:
 # CLASSIFICATION LOGIC
 # ============================================================
 
+DXA_BLURB = (
+    "**What's a DXA scan?** The gold-standard test for bone density — a "
+    "low-radiation scan (usually of the hip/spine) that a doctor uses to "
+    "confirm osteoporosis or osteopenia and decide on treatment."
+)
+
+
 def classify_hu(hu_value):
     if hu_value <= OSTEOPOROSIS_MAX:
         return "Osteoporosis", "🔴", "#b3261e"
@@ -223,6 +230,11 @@ def classify_hu(hu_value):
 def interpretation(category):
     if category == "Osteoporosis":
         return {
+            "definition": (
+                "Osteoporosis means bone has lost density and strength "
+                "faster than the body can rebuild it — bones become "
+                "porous and fragile, with a much higher fracture risk."
+            ),
             "action": "Refer for a formal DXA scan",
             "message": (
                 "The HU value falls at or below the Osteoporosis "
@@ -232,6 +244,11 @@ def interpretation(category):
         }
     elif category == "Osteopenia":
         return {
+            "definition": (
+                "Osteopenia means bone density is lower than normal, "
+                "but not low enough to be called osteoporosis — an "
+                "early warning stage, not a disease itself."
+            ),
             "action": "Consider a DXA scan, especially with other risk factors",
             "message": (
                 "The HU value falls in the Osteopenia range. Bone "
@@ -242,6 +259,10 @@ def interpretation(category):
         }
     else:
         return {
+            "definition": (
+                "This range is consistent with normal, healthy bone "
+                "density by this screening method."
+            ),
             "action": "No additional action indicated by this signal",
             "message": (
                 "The HU value falls above the Osteopenia threshold, "
@@ -339,6 +360,30 @@ if st.session_state.page == "Home":
             "One scan a patient already had now does the work of two, at no "
             "extra radiation and no extra cost."
         )
+
+    st.write("")
+
+    with st.container(border=True):
+        st.markdown("### 📖 Quick terms")
+        t1, t2, t3 = st.columns(3)
+        with t1:
+            st.markdown("**DXA scan**")
+            st.caption(
+                "The gold-standard, low-radiation scan that measures bone "
+                "density directly and confirms osteoporosis/osteopenia."
+            )
+        with t2:
+            st.markdown("**Osteoporosis**")
+            st.caption(
+                "Bone has lost density/strength faster than it can rebuild — "
+                "porous, fragile bone with a much higher fracture risk."
+            )
+        with t3:
+            st.markdown("**Osteopenia**")
+            st.caption(
+                "Lower-than-normal bone density — an early warning stage, "
+                "not yet osteoporosis."
+            )
 
     st.write("")
 
@@ -451,6 +496,7 @@ elif st.session_state.page == "Analyze":
 
     with right:
         st.markdown("### What does this mean?")
+        st.write(f"**{category}:** {info['definition']}")
         st.write(info["message"])
         st.markdown(f"**Suggested next step:** {info['action']}")
         st.caption(
@@ -458,6 +504,7 @@ elif st.session_state.page == "Analyze":
             "DXA in over 20,000 patients): HU ≤ 110 → Osteoporosis · "
             "110–160 → Osteopenia · > 160 → Normal."
         )
+        st.info(DXA_BLURB)
 
     if uploaded_scan is not None:
         st.divider()
@@ -467,6 +514,10 @@ elif st.session_state.page == "Analyze":
             "This image is shown for reference only — the classification "
             "above comes from the HU value you entered, not from analyzing "
             "this image live (full segmentation runs offline in Colab; see Learn)."
+        )
+        st.caption(
+            f"Reminder: **{category}** here means {info['definition'].lower()} "
+            "A formal DXA scan is the only way to confirm this from an actual scan."
         )
 
     st.divider()
@@ -490,6 +541,20 @@ elif st.session_state.page == "Demos":
         "public TCIA Lung-PET-CT-Dx dataset used in this project — one "
         "example from each classification category."
     )
+
+    with st.container(border=True):
+        st.markdown("##### Quick reference")
+        leg1, leg2, leg3 = st.columns(3)
+        with leg1:
+            st.markdown("🟢 **Normal**")
+            st.caption("Healthy bone density by this method.")
+        with leg2:
+            st.markdown("🟠 **Osteopenia**")
+            st.caption("Lower-than-normal density — an early warning stage.")
+        with leg3:
+            st.markdown("🔴 **Osteoporosis**")
+            st.caption("Porous, fragile bone with higher fracture risk.")
+        st.caption(DXA_BLURB)
 
     cols = st.columns(3, gap="medium")
 
@@ -515,7 +580,9 @@ elif st.session_state.page == "Demos":
 
                 if st.button("See explanation", key=f"demo_{i}", use_container_width=True):
                     info = interpretation(category)
+                    st.write(f"**{category}:** {info['definition']}")
                     st.info(info["message"])
+                    st.caption(DXA_BLURB)
 
     st.divider()
     st.caption(
@@ -541,6 +608,11 @@ elif st.session_state.page == "Results":
         st.markdown("### Classification breakdown")
         counts = success_df["classification"].value_counts()
         st.bar_chart(counts)
+        st.caption(
+            "🟢 Normal = healthy density · 🟠 Osteopenia = early warning stage · "
+            "🔴 Osteoporosis = fragile bone, higher fracture risk. "
+            "A formal DXA scan confirms any of these."
+        )
 
         st.markdown("### HU value by patient")
         st.bar_chart(success_df.set_index("patient")["mean_hu"])
@@ -675,6 +747,30 @@ elif st.session_state.page == "Learn":
             "L1 is the vertebra most consistently included in standard "
             "chest CT scans, and it's the same vertebra validated against "
             "DXA in the Pickhardt et al. (2019) study of over 20,000 patients."
+        )
+
+    with st.expander("🔀 Image fusion: the same principle used in PET-CT"):
+        st.write(
+            "In radiology, **image fusion** (or multimodal fusion) combines "
+            "two scans so each covers the other's weakness — most commonly "
+            "**PET-CT**, where a PET scan's functional/metabolic signal "
+            "(e.g. 'this area is metabolically active') is overlaid onto a "
+            "CT scan's precise anatomical detail (exact location, shape, "
+            "structure). Alone, PET shows *that* something is happening "
+            "but not clearly *where*; CT shows *where* everything is but "
+            "not function. Fused together, both questions get answered "
+            "in one image."
+        )
+        st.write(
+            "The sample overlay images in the Demos tab use this same "
+            "visualization principle, at a smaller scale: instead of "
+            "fusing two separate scans, they fuse a single CT scan with "
+            "**AI-derived information about that same scan** — the "
+            "TotalSegmentator-predicted L1 location — overlaid in color on "
+            "top of the grayscale anatomy. It's the same underlying idea "
+            "that makes PET-CT fusion useful: don't just report a number, "
+            "show *where on the actual scan* that number came from, so a "
+            "clinician can visually verify it."
         )
 
     with st.expander("🔬 What is TotalSegmentator?"):
