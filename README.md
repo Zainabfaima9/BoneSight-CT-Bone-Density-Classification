@@ -4,12 +4,17 @@
 
 *An independent research prototype built solo — no mentor, no hospital access, no institutional data — using only public data and free, open-source AI tools.*
 
+### 🚀 [**Live Demo → Open the App**](https://YOUR-APP-NAME.streamlit.app)
+
+> ⏳ The app is hosted on Streamlit Community Cloud's free tier. If it has been idle, it may take **~30 seconds to wake up** the first time you open it. If you see a "Yes, get this app back up!" button, just click it.
+
 ![Classification Breakdown](images/classification_breakdown.png)
 
 ---
 
 ## Table of Contents
 
+- [Live Demo](#live-demo)
 - [The Story](#the-story)
 - [The Problem](#the-problem)
 - [What Inspired This Project](#what-inspired-this-project)
@@ -21,12 +26,33 @@
 - [Tools and Technologies](#tools-and-technologies)
 - [Results](#results)
 - [Sample Cases](#sample-cases)
+- [Run the App Locally](#run-the-app-locally)
 - [How This Could Work in a Real Hospital](#how-this-could-work-in-a-real-hospital)
 - [Why Build This At All](#why-build-this-at-all)
 - [Honest Limitations](#honest-limitations)
 - [Project Structure](#project-structure)
 - [References](#references)
-- [About](#about)
+- [About Me](#about-me)
+
+---
+
+## Live Demo
+
+You can try the working app here, with no installation needed:
+
+**👉 https://YOUR-APP-NAME.streamlit.app**
+
+What you can do in the app:
+
+| Tab | What it shows |
+|---|---|
+| **Home** | Project overview, key numbers, and why this matters |
+| **Try It** | Enter an L1 HU value and get an instant Normal / Osteopenia / Osteoporosis classification |
+| **Demos** | Three real patients (one per category) with the L1 vertebra highlighted on the original CT slice |
+| **Results** | Charts and a downloadable table for all 20 successfully screened patients |
+| **Learn** | Full explanation of the method, background, pipeline, and limitations |
+
+> Note: the full segmentation (TotalSegmentator) is too heavy to run inside the deployed app, so it runs offline in Google Colab. The live app classifies from an already-measured HU value and shows the real output of the Colab pipeline.
 
 ---
 
@@ -225,7 +251,75 @@ Three real, de-identified patients from the dataset — one from each classifica
 | Lung_Dx-A0080 | 127.11 | Osteopenia | `sample_images/Lung_Dx-A0080_overlay.png` |
 | Lung_Dx-A0093 | 183.03 | Normal | `sample_images/Lung_Dx-A0093_overlay.png` |
 
-*(See the `sample_images/` folder or the live app's Demos tab for the actual overlay images — original scan alongside the AI-segmented L1 vertebra highlighted in red.)*
+*(See the `sample_images/` folder or the [live app's](https://YOUR-APP-NAME.streamlit.app) Demos tab for the actual overlay images — original scan alongside the AI-segmented L1 vertebra highlighted in red.)*
+
+---
+
+## Run the App Locally
+
+The Streamlit app runs on any normal laptop (no GPU needed). The heavy segmentation step is not part of the app, so only a few lightweight libraries are required.
+
+### Requirements
+
+- Python 3.9 or newer
+- Git
+
+### Steps
+
+**1. Clone the repository**
+
+```bash
+git clone https://github.com/YOUR-USERNAME/bonesight-ct.git
+cd bonesight-ct
+```
+
+**2. (Recommended) Create a virtual environment**
+
+```bash
+# Windows
+python -m venv venv
+venv\Scripts\activate
+
+# macOS / Linux
+python3 -m venv venv
+source venv/bin/activate
+```
+
+**3. Install dependencies**
+
+```bash
+pip install -r requirements.txt
+```
+
+If you don't have a `requirements.txt` yet, create one with these two lines:
+
+```
+streamlit
+pandas
+```
+
+**4. Start the app**
+
+```bash
+streamlit run app.py
+```
+
+The app opens automatically in your browser at **http://localhost:8501**. If it doesn't, copy that address into your browser manually.
+
+**5. Stop the app**
+
+Press `Ctrl + C` in the terminal.
+
+### Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| `streamlit: command not found` | Run `python -m streamlit run app.py` instead |
+| `bonesight_results.csv not found` warning | Make sure you run the command from the project folder, where `app.py` and the CSV are together |
+| "Overlay image not yet added" message in Demos | Check that the three images exist inside the `sample_images/` folder with the exact file names |
+| Dark charts / dark tables | Make sure the `.streamlit/config.toml` file (light theme) is present in the project folder |
+
+> The offline segmentation pipeline (TotalSegmentator, `dicom2nifti`, etc.) was run in Google Colab and is not needed to run the app. The app reads the saved results from `bonesight_results.csv`.
 
 ---
 
@@ -267,6 +361,11 @@ bonesight-ct/
 ├── app.py                     # Streamlit app
 ├── requirements.txt           # Python dependencies
 ├── bonesight_results.csv      # Final results (20 patients)
+├── .streamlit/
+│   └── config.toml            # Forces the light theme (readable charts/tables)
+├── .github/
+│   └── workflows/
+│       └── keepalive.yml      # Periodically visits the live app so it stays awake
 ├── images/                    # README charts
 │   ├── classification_breakdown.png
 │   ├── pipeline_outcomes.png
@@ -289,8 +388,24 @@ bonesight-ct/
 
 ---
 
-## About
+## About Me
 
-Built independently by **Zainab Fatima**, a BS Medical Imaging Technology student, without institutional data access or a mentor, using the public Lung-PET-CT-Dx dataset (The Cancer Imaging Archive).
+Hi, I'm **Zainab Fatima** 👋
+
+I'm a **BS Medical Imaging Technology** student in my 7th semester, based in Pakistan. My training is in how medical images are actually produced and used in hospitals — CT, X-ray, and other imaging modalities — and I've spent my clinical internships watching that work happen in real departments, in both government and private hospitals.
+
+Those internships shaped how I think about my field. I saw how much of a patient's care depends on whether the right equipment is available, working, and reachable — and how big the gap can be between a well-equipped hospital and a smaller-city one that has no dedicated bone density scanner at all. That gap is what pushed me towards a question I now care about: **how can we get more value out of the scans that are already being done?**
+
+That is also why I am drawn to AI in medical imaging. I don't see AI as a replacement for radiologists or technologists. I see it as a way to extend what existing scans can tell us, especially where resources are limited. BoneSight-CT is my first end-to-end attempt at this: I took a real clinical question, found a validated published method, built the full pipeline on public data, hit real technical walls (no GPU, library bugs, a ~10% success rate), and reported all of it honestly instead of hiding it.
+
+This is my third independent project, and I built it without a mentor or institutional data access. It taught me that I can take an idea from a question to a working, deployed prototype on my own, and that being honest about limitations is part of doing research properly.
+
+**What I'm looking for:** I plan to apply for fully funded scholarships abroad (Europe, the UK, the USA, and China, and other countries with a relevant program) to continue my studies and take part in research at the intersection of medical imaging and AI.
+
+**Contact**
+
+- 📧 Email: *zf7767027@gmail.com*
+
+---
 
 > ⚠️ **Research/student prototype only.** This tool is not clinically validated and must not be used to diagnose patients or replace a formal DXA scan.
