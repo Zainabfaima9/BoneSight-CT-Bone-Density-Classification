@@ -74,6 +74,48 @@ st.markdown(
     #MainMenu { visibility: hidden; }
     footer { visibility: hidden; }
 
+    /* ---------- LIGHT TOP BAR (Share / star / GitHub icons wali bar) ---------- */
+    header[data-testid="stHeader"] {
+        background-color: #f6f8fb !important;
+    }
+    header[data-testid="stHeader"] * {
+        color: #17324d !important;
+    }
+
+    /* ---------- LIGHT UPLOAD BOX ---------- */
+    section[data-testid="stFileUploaderDropzone"] {
+        background-color: #ffffff !important;
+        border: 1px dashed #d8e2ea !important;
+    }
+    section[data-testid="stFileUploaderDropzone"] *,
+    div[data-testid="stFileUploader"] small {
+        color: #17324d !important;
+    }
+    section[data-testid="stFileUploaderDropzone"] button {
+        background-color: #ffffff !important;
+        border: 1px solid #d8e2ea !important;
+        color: #17324d !important;
+    }
+
+    /* ---------- LIGHT DOWNLOAD BUTTON ---------- */
+    div.stDownloadButton > button {
+        border-radius: 10px;
+        min-height: 2.55rem;
+        font-weight: 650;
+        border: 1px solid #d8e2ea;
+        background: #ffffff !important;
+        color: #17324d !important;
+    }
+    div.stDownloadButton > button * {
+        color: #17324d !important;
+    }
+    div.stDownloadButton > button:hover {
+        border-color: #a4785a;
+    }
+    div.stDownloadButton > button:hover * {
+        color: #a4785a !important;
+    }
+
     /* ---------- FORCE READABLE TEXT ----------
        Streamlit's dark theme (if the user's browser/device defaults to
        it) makes plain text white-on-white against our light background.
