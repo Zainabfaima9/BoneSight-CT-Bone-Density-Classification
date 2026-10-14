@@ -4,7 +4,7 @@
 
 *An independent research prototype built solo — no mentor, no hospital access, no institutional data — using only public data and free, open-source AI tools.*
 
-### 🚀 [**Live Demo → Open the App**](https://YOUR-APP-NAME.streamlit.app)
+### 🚀 [**Live Demo → Open the App**](https://bonesight-ct-bone-density-classification-7q4mqkaxevvfv2qh7zd6d.streamlit.app/)
 
 > ⏳ The app is hosted on Streamlit Community Cloud's free tier. If it has been idle, it may take **~30 seconds to wake up** the first time you open it. If you see a "Yes, get this app back up!" button, just click it.
 
@@ -40,7 +40,7 @@
 
 You can try the working app here, with no installation needed:
 
-**👉 https://YOUR-APP-NAME.streamlit.app**
+**👉 https://bonesight-ct-bone-density-classification-7q4mqkaxevvfv2qh7zd6d.streamlit.app/**
 
 What you can do in the app:
 
